@@ -1,7 +1,5 @@
 FROM php:8.0-apache
 
-# Install tar
-RUN docker-php-ext-install fileinfo iconv zip mbstring
 
 
 COPY . /var/www/html
