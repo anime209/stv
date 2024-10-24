@@ -1,18 +1,14 @@
-FROM php:latest
-
-# Install any needed packages
-RUN apt-get update && apt-get install -y \
-    git \
-    unzip
-
-# Copy your PHP code into the container
-COPY . /app
+# Use the official PHP image with Apache
+FROM php:7.4-apache
 
 # Set the working directory
-WORKDIR /app
+WORKDIR /var/www/html
 
-# Expose port 80 to the outside world
+# Copy your application source code into the container
+COPY . .
+
+# Install any PHP extensions you need
+RUN docker-php-ext-install mysqli
+
+# Expose port 80 to be able to access the container externally
 EXPOSE 80
-
-# Run PHP built-in server
-CMD ["php", "-S", "0.0.0.0:80", "-t", "/app"]
