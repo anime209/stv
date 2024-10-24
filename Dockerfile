@@ -1,29 +1,15 @@
-# how to build?
-# docker login
-## .....input your docker id and password
-#docker build . -t tinyfilemanager/tinyfilemanager:master
-#docker push tinyfilemanager/tinyfilemanager:master
+FROM php:8.3.13-apache
 
-# how to use?
-# docker run -d -v /absolute/path:/var/www/html/data -p 80:80 --restart=always --name tinyfilemanager tinyfilemanager/tinyfilemanager:master
+# Enable the extensions
+RUN docker-php-ext-install fileinfo iconv zip mbstring
 
-FROM php:7.4-cli-alpine
+# Install tar
+RUN apt-get update && apt-get install -y tar
 
-# if run in China
-# RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+# Clean up to reduce image size
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
-RUN apk add \
-    libzip-dev \
-    oniguruma-dev
-
-RUN docker-php-ext-install \
-    zip 
-
-WORKDIR /var/www/html
-
-COPY tinyfilemanager.php index.php stv_nb.php stv_nb.log stv_reset.php
-COPY config-sample.php config.php
-RUN sed -i "s/\$root_path =.*;/\$root_path = \$_SERVER['DOCUMENT_ROOT'].'\/data';/g" config.php && \
-    sed -i "s/\$root_url = '';/\$root_url = 'data\/';/g" config.php
-
-CMD ["sh", "-c", "php -S 0.0.0.0:80"]
+# Configure Apache
+COPY . /var/www/html/
+EXPOSE 80
+CMD ["apache2-foreground"]
