@@ -1,6 +1,6 @@
 <?php
 // Log file path
-$logFile = 'stv_online.log';
+$logFile = 'stv_bv_td.log';
 
 // Append POST data to the log file
 file_put_contents($logFile, "");
